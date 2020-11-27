@@ -1,4 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# /filename/    根目录下的文件夹
+# filename/   所有的符合的文件夹
+# filename    符合的文件夹，包括filename这个空文件夹
 
 # dependencies
 /node_modules

@@ -1,0 +1,19 @@
+.App {
+    width: 100vw;
+    height: 100vh;
+    .head {
+        width: 100vw;
+        height: 8vh;
+        .title {
+            width: 15vw;
+            height: 8vh;
+            color: #1890ff;
+            font-size: 24px;
+            text-align: center;
+            line-height: 8vh;
+            font-weight: bold;
+            font-style: italic;
+            background-color: rgba(0,0,0,0.1);
+        }
+    }
+}
