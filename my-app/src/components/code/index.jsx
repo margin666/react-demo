@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import style from './style.module.scss'
 import AceEditor from 'react-ace'
 import 'brace/mode/javascript'
@@ -29,12 +29,15 @@ import "brace/theme/idle_fingers";
 import "brace/theme/iplastic";
 import "brace/theme/katzenmilch";
 import "brace/theme/tomorrow_night_blue";
-import { Select, Form, Button } from 'antd'
+import { Select, Form, Button, message } from 'antd'
 import { EllipsisOutlined } from '@ant-design/icons';
+import axios from 'axios'
+import qs from 'qs'
 const { Option } = Select
 
-export default function Code() {
-    const [code, setCode] = useState('asd')
+
+function Code(props) {
+    const [code, setCode] = useState('')
     const [config, setConfig] = useState({
         theme: 'ambiance',
         mode: 'javascript',
@@ -47,12 +50,37 @@ export default function Code() {
             fontSize: all[2].value,
         })
     }
+    //获取笔记内容
+    const get_content = () => {
+        const { text_name } = props.match.params
+        axios.get('http://localhost:3030/file/open', { params: { text_name } }).then(res => {
+            setCode(res.data.data)
+        })
+    }
+
+    useEffect(() => {
+        get_content()
+
+    }, [])
+
+    //保存笔记
+    const save_note = () => {
+        const data = qs.stringify({
+            text_name: props.match.params.text_name,
+            data: code
+        })
+        axios.post('http://localhost:3030/file/put', data).then(res => {
+            if (res.data.code === 200) {
+                message.success('保存成功！')
+            }
+        })
+    }
     return (
         <div className={style.code}>
             <div className={style.config}>
                 <Form size='small' layout='inline' className={style.form} onFieldsChange={change} initialValues={config}>
                     <Form.Item label="theme" name='theme'>
-                        <Select style={{width:'6vw'}}>
+                        <Select style={{ width: '6vw' }}>
                             <Option value="ambiance">ambiance</Option>
                             <Option value="chaos">chaos</Option>
                             <Option value="gob">gob</Option>
@@ -74,7 +102,7 @@ export default function Code() {
                         </Select>
                     </Form.Item>
                     <Form.Item label="mode" name='mode'>
-                        <Select style={{width:'6vw'}}>
+                        <Select style={{ width: '6vw' }}>
                             <Option value="css">css</Option>
                             <Option value="javascript">javascript</Option>
                             <Option value="sass">sass</Option>
@@ -88,13 +116,19 @@ export default function Code() {
                         </Select>
                     </Form.Item>
                     <Form.Item label="fontSize" name='fontSize'>
-                        <Select style={{width:'6vw'}}>
+                        <Select style={{ width: '6vw' }}>
                             <Option value={16}>16px</Option>
                             <Option value={18}>18px</Option>
                         </Select>
                     </Form.Item>
                     <Form.Item>
-                        <Button icon={<EllipsisOutlined />}  />
+                        <Button icon={<EllipsisOutlined />} />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button onClick={() => window.history.back(-1)} type='primary'>Back</Button>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button onClick={() => window.open('https://tool.lu/coderunner/')} type='primary'>Run</Button>
                     </Form.Item>
                 </Form>
 
@@ -109,8 +143,9 @@ export default function Code() {
                 highlightActiveLine  //突出活动线
                 enableSnippets  //启用代码段
                 onChange={val => setCode(val)}
+                onBlur={save_note}
                 editorProps={{ $blockScrolling: true }}
-                style={{ width: '83vw', height: '82vh',}}
+                style={{ width: '83vw', height: '82vh', }}
                 setOptions={{
                     enableBasicAutocompletion: false,   //启用基本自动完成功能
                     enableLiveAutocompletion: true,   //启用实时自动完成功能 （比如：智能代码提示）
@@ -120,12 +155,17 @@ export default function Code() {
                 }}
                 commands={[{    //命令是键绑定数组。
                     name: 'saveFile', //键绑定的名称。
-                    bindKey: {win: 'Ctrl-S', mac: 'Command-S'}, //用于命令的组合键。
-                    exec: ()=>{
-                           console.log('save')
+                    bindKey: { win: 'Ctrl-S', mac: 'Command-S' }, //用于命令的组合键。
+                    exec: () => {
+                        console.log('save')
+                        // save_note()
                     }   //重新绑定命令的名称
-             }]}
-            />,
+                }]}
+            />
         </div>
     )
 }
+
+
+
+export default Code

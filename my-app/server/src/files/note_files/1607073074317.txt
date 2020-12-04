@@ -1,0 +1,111 @@
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 ""。
+
+示例 1:
+
+输入: ["flower","flow","flight"]
+输出: "fl"
+示例 2:
+
+输入: ["dog","racecar","car"]
+输出: ""
+解释: 输入不存在公共前缀。
+说明:
+
+所有输入只包含小写字母 a-z 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-common-prefix
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+
+横向扫描
+比较前两个，提取公共的字符然后去和第三个比较，最终得到的为公共字符串
+
+
+
+var longestCommonPrefix = function(strs) {
+    const fn = (str1, str2) => {//提取两个字符的相同部分
+        let len = str1.length > str2.length?str2.length:str1.length
+        let newstr = ''
+        for(let i = 0; i < len; i++){
+            if(str1[i] === str2[i]){
+                newstr += str1[i]
+            } else {
+                return newstr
+            }
+        }
+        return newstr
+    }
+    if(strs.length === 0) return ''
+    if(strs.length === 1) return strs[0]
+    let first = strs[0], len = strs.length
+    for(let i = 1;i < len ;i++){
+		//console.log(first)
+		//console.log(second)
+        
+        first = fn(first, strs[i])
+		//console.log(first)
+		//console.log(second)
+        
+    }
+	return first
+};
+
+
+纵向扫描
+所有的第一个比较，相同向后移动一位
+
+const fn = arr => {
+    if(arr.length === 0) return ''
+    if(arr.length === 1) return arr[0]
+    let index = 0, len = arr.length, pubstr = ''  //下标
+    while(true){
+		const pubstr2 = arr[0][index]
+        for(let i = 0;i < len; i++){
+            if(arr[i][index] != pubstr2 || arr[i][index] == undefined){
+                return pubstr
+            }
+			
+        }
+		
+        ++index
+		pubstr += pubstr2
+    }
+    
+}
+const arr = ['', '', '']
+console.log(fn(arr))
+
+
+
+
+分治法比较
+两两比较，继续比较最后的结果
+
+// const fn = (str1, str2) => {//提取两个字符的相同部分
+//     let len = str1.length > str2.length?str2.length:str1.length
+//     let newstr = ''
+//     for(let i = 0; i < len; i++){
+//         if(str1[i] === str2[i]){
+//             newstr += str1[i]
+//         } else {
+//             return newstr
+//         }
+//     }
+//     return newstr
+// }
+
+
+
+
+
+
+
+
+
+
+
+

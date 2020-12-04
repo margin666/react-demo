@@ -8,7 +8,7 @@ function Right() {
     return (
         <div className={style.Right}>
             <Switch>
-                <Route path='/code' component={Code}></Route>
+                <Route path='/code/:text_name' component={Code}></Route>
                 <Route path='/note' component={Note}></Route>
                 <Redirect from='/' to='/note' exact></Redirect>
             </Switch>

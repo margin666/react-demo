@@ -1,10 +1,12 @@
 .code {
     width: 83vw;
     height: 90vh;
+    position: relative;
     .config {
         width: 83vw;
         height: 6vh;
         padding: 0 1vw;
+
         .form {
             height: 6vh;
             display: flex;

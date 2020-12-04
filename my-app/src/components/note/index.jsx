@@ -1,19 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect,  } from 'react'
 import { Button, Table, Space, Modal, Form, Input } from 'antd'
 import style from './style.module.scss'
+import axios from 'axios'
+import qs from 'qs'
 
 function Note(props) {
+    //获取数据列表
+    const [dataSource, setDataSource] = useState([])
+    const get_list = () => {
+        axios.get('http://localhost:3030/file/get_list').then(res => {
+            if(res.data.code === 200){
+                let arr = res.data.data.list.map((item, index) => {
+                    return Object.assign({}, item, {key: index+1})
+                })
+                setDataSource(arr)
+            }
+        })
+    }
+    useEffect(() => {
+        get_list()
+    }, [])
+    
 
-    const dataSource = [
-        { key: 1, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 2, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 3, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 4, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 5, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 6, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 7, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-        { key: 8, title: '闪电鞭', author: '马保国', date: '2020-11-27', size: '12kb' },
-    ]
+    //表格配置
     const columns = [
         {
             title: '序号', render: (text, record, index) => {
@@ -37,36 +46,52 @@ function Note(props) {
     const [visible, setVisible] = useState(false)
     const open = (e) => {
         //打开文件
-        console.log(e)
-        // console.log(props)
-        props.history.push('/Code')
+        props.history.push('/Code/'+e.text_name)
     }
-    const handleOk = () => {
+    //提交添加笔记的内容
+    const add_note = (e) => {
+        const date = new Date()
+        const data = qs.stringify({
+            title: e.title,
+            date: date.getFullYear() +'-'+((date.getMonth())+1)+'-'+date.getDate(),
+            author: 'margin',
+            size: '15kb',
+            text_name: (new Date()).valueOf()
+        })
+        axios.post('http://localhost:3030/file/add', data).then(res => {
+            if(res.data.code === 200){
+                get_list()
+            }
+        })
+    }
+    const handleOk = (e) => {
+        add_note(e)
         setVisible(false)
         
+        
     }
+
     const handleCancel = () => {
         setVisible(false)
     }
     //添加笔记
     const handleAdd = () => {
         setVisible(true)
-        setNotename('')
+        // setNotename('')
     }
-    //笔记名称
-    const [notename, setNotename] = useState('')
+    
     
     return (
         <div className={style.Note}>
             <Modal
                 title="添加笔记"
                 visible={visible}
-                onOk={handleOk}
                 onCancel={handleCancel}
+                okButtonProps={{htmlType: 'submit', form: 'form'}}
             >
-                <Form layout="horizontal">
-                    <Form.Item label="名称">
-                        <Input value={notename} onChange={e => setNotename(e.value)} />
+                <Form layout="horizontal" id='form' onFinish={handleOk}>
+                    <Form.Item label="名称" name='title'>
+                        <Input />
                     </Form.Item>
                 </Form>
             </Modal>

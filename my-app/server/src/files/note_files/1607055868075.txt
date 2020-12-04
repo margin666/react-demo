@@ -1,0 +1,37 @@
+
+hasOwnProperty(key)  //判断自身非继承属性是否存在，继承的会返回false
+
+class hashMap {
+    constructor() {
+        this.map = {}
+    }
+    
+    get(key) {
+        if(this.map.hasOwnProperty(key)) {
+            return this.map[key]
+        }
+        return null
+    }
+    put(key, value) {
+        this.map[key] = value
+    }
+    //移除某个元素
+    remove(key) {
+        if(this.map.hasOwnProperty(key)){
+            return delete this.map[key]
+        }
+        return null
+    }
+    
+    removeAll() {
+        this.map = {}
+    }
+}
+
+let hashmap = new hashMap()
+
+hashmap.put(0,'q')
+hashmap.put(1,'w')
+
+
+console.log(hashmap.get(1))
